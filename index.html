@@ -1010,16 +1010,60 @@
             });
         }
         
-        async function addNewCity() {
-            const name = document.getElementById('newCityName').value.trim();
-            const formCode = document.getElementById('newFormCode').value.trim();
-            const processingTime = document.getElementById('newProcessingTime').value.trim();
-            const pdfFile = document.getElementById('newCityPDF').files[0];
-            
-            if (!name || !formCode || !processingTime) {
-                alert('Please fill in all city details');
-                return;
-            }
+async function addNewCity() {
+    const name = document.getElementById('newCityName').value.trim();
+    const pdfFile = document.getElementById('newCityPDF').files[0];
+
+    // Get selected fields
+    const selectedFields = [];
+    document.querySelectorAll('#fieldSelector input[type="checkbox"]:checked').forEach(cb => {
+        selectedFields.push(cb.value);
+    });
+
+    // Validate required data
+    if (!name) {
+        alert('Please enter a city name');
+        return;
+    }
+    if (selectedFields.length === 0) {
+        alert('Please select at least one required field');
+        return;
+    }
+
+    let pdfUrl = null;
+
+    // Upload PDF if provided
+    if (pdfFile) {
+        const cityId = name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_');
+        const storageRef = window.ref(window.storage, `templates/${cityId}_${Date.now()}.pdf`);
+        const snapshot = await window.uploadBytes(storageRef, pdfFile);
+        pdfUrl = await window.getDownloadURL(snapshot.ref);
+    }
+
+    // Build city data object
+    const cityData = {
+        name: name,
+        requiredFields: selectedFields,
+        createdAt: new Date()
+    };
+    if (pdfUrl) {
+        cityData.pdfTemplateUrl = pdfUrl;
+    }
+
+    const cityId = name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_');
+    await window.setDoc(window.doc(window.db, 'cities', cityId), cityData);
+
+    // Clear the form (reset inputs and checkboxes)
+    document.getElementById('newCityName').value = '';
+    document.getElementById('newCityPDF').value = '';
+    document.querySelectorAll('#fieldSelector input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+    });
+
+    alert('City added successfully!');
+}
+
+
             
             // Get selected fields
             const selectedFields = [];
@@ -1046,16 +1090,25 @@
                 }
                 
                 // Save city to Firestore
-                const cityData = {
-                    name: name,
-                    formCode: formCode,
-                    processingTime: processingTime,
-                    requiredFields: selectedFields,
-                    pdfTemplateUrl: pdfUrl,
-                    createdAt: new Date()
-                };
-                
-                await window.setDoc(window.doc(window.db, 'cities', cityId), cityData);
+const cityData = {
+    name: name,
+    requiredFields: selectedFields,
+    createdAt: new Date()
+};
+
+if (formCode) {
+    cityData.formCode = formCode;
+}
+if (processingTime) {
+    cityData.processingTime = processingTime;
+}
+if (pdfUrl) {
+    cityData.pdfTemplateUrl = pdfUrl;
+}
+
+// Save to Firestore
+await window.setDoc(window.doc(window.db, 'cities', cityId), cityData);
+
                 
                 // Clear form
                 document.getElementById('newCityName').value = '';
@@ -1077,7 +1130,6 @@
                 console.error('Error adding city:', error);
                 alert('Error adding city: ' + error.message);
             }
-        }
         
         async function loadCitiesFromFirebase() {
             if (!window.db) return;
