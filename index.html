@@ -1171,21 +1171,24 @@ async function addNewCity() {
                 let pdfBytes;
                 
                 // Check if city has a PDF template
-                if (config.pdfTemplateUrl) {
-                    try {
-                        // Download and use the template
-                        const response = await fetch(config.pdfTemplateUrl);
-                        const templateBytes = await response.arrayBuffer();
-                        pdfBytes = await fillPDFTemplate(templateBytes, formData);
-                    } catch (error) {
-                        console.error('Error using PDF template:', error);
-                        // Fallback to creating PDF from scratch
-                        pdfBytes = await createPermitPDF(selectedCity, formData);
-                    }
-                } else {
-                    // Create PDF from scratch
-                    pdfBytes = await createPermitPDF(selectedCity, formData);
-                }
+                // Check if city has a PDF template
+if (config.pdfTemplateUrl) {
+    try {
+        // Always resolve the storage reference to a CORS-friendly URL
+        const storageRef = window.ref(window.storage, config.pdfTemplateUrl);
+        const downloadURL = await window.getDownloadURL(storageRef);
+        const response = await fetch(downloadURL);
+        const templateBytes = await response.arrayBuffer();
+        pdfBytes = await fillPDFTemplate(templateBytes, formData);
+    } catch (error) {
+        console.error('Error using PDF template:', error);
+        // Fallback to creating PDF from scratch
+        pdfBytes = await createPermitPDF(selectedCity, formData);
+    }
+} else {
+    // Create PDF from scratch
+    pdfBytes = await createPermitPDF(selectedCity, formData);
+}
                 
                 // Download the PDF
                 const blob = new Blob([pdfBytes], { type: 'application/pdf' });
