@@ -1035,10 +1035,13 @@ async function addNewCity() {
     // Upload PDF if provided
     if (pdfFile) {
         const cityId = name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_');
-        const storageRef = window.ref(window.storage, 'templates/lee_s_summit_mo.pdf');
-        const url = await window.getDownloadURL(storageRef);
-        const response = await fetch(url);
+        const storageRef = window.ref(window.storage, `templates/${cityId}_${Date.now()}.pdf`);
+        const snapshot = await window.uploadBytes(storageRef, pdfFile);
+        pdfUrl = await window.getDownloadURL(snapshot.ref);
     }
+    if (pdfUrl) {
+    cityData.pdfTemplateUrl = pdfUrl;
+}
 
     // Build city data object
     const cityData = {
@@ -1886,6 +1889,5 @@ async function addNewCity() {
 </script>
 </body>
 </html>
-
 
 
