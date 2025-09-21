@@ -1,1896 +1,919 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar Permit Tool - v38</title>
-    <script src="https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js"></script>
-    
+    <title>Solar Permit Automation Tool</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f7fa;
+            background-color: #ffffff;
+            color: #000000;
         }
         
         h1 {
-            color: #2c3e50;
             text-align: center;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
-            margin-bottom: 30px;
-        }
-        
-        .step-indicator {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-        
-        .step {
-            background: #bdc3c7;
-            color: white;
-            padding: 10px 20px;
-            margin: 0 10px;
-            border-radius: 25px;
+            font-size: 24px;
             font-weight: bold;
-            transition: all 0.3s ease;
+            margin: 40px 0;
+            text-transform: uppercase;
         }
         
-        .step.active {
-            background: #3498db;
-            transform: scale(1.1);
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 100px;
         }
         
-        .step.completed {
-            background: #27ae60;
+        .main-button {
+            background-color: #c0c0c0;
+            border: none;
+            padding: 20px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 400px;
+            text-align: center;
+            color: #000000;
+            transition: background-color 0.3s;
+        }
+        
+        .main-button:hover {
+            background-color: #a0a0a0;
+        }
+        
+        .city-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 50px;
+        }
+        
+        .city-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+        
+        .city-button {
+            background-color: #c0c0c0;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 300px;
+            text-align: center;
+            color: #000000;
+            transition: background-color 0.3s;
+        }
+        
+        .city-button:hover {
+            background-color: #a0a0a0;
+        }
+        
+        .back-button {
+            background-color: #c0c0c0;
+            border: none;
+            padding: 10px 30px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: #000000;
+            margin-top: 30px;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #a0a0a0;
         }
         
         .form-container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            margin-top: 50px;
         }
         
-        .city-selection {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .city-card {
-            border: 2px solid #bdc3c7;
-            border-radius: 8px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .city-card:hover {
-            border-color: #3498db;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
-        .city-card.selected {
-            border-color: #3498db;
-            background: #ebf3fd;
-        }
-        
-        .city-card h3 {
-            margin: 0 0 10px 0;
-            color: #2c3e50;
-        }
-        
-        .city-card p {
-            margin: 5px 0;
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-        
-        .form-row {
-            margin-bottom: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
+        .form-title {
+            font-size: 20px;
             font-weight: bold;
-            color: #34495e;
-            display: block;
-            margin-bottom: 5px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 10px;
         }
         
-        input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #bdc3c7;
-            border-radius: 5px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-        
-        input:focus {
-            border-color: #3498db;
-            outline: none;
-        }
-        
-        button {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 5px;
+        .form-subtitle {
             font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+        
+        .subhub-button {
+            background-color: #c0c0c0;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
             cursor: pointer;
-            margin: 10px 5px;
-            transition: all 0.3s ease;
+            color: #000000;
+            margin-bottom: 40px;
+            transition: background-color 0.3s;
         }
         
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        .subhub-button:hover {
+            background-color: #a0a0a0;
         }
         
-        button:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-            transform: none;
+        .form-field {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 20px;
+        }
+        
+        .field-label {
+            font-weight: bold;
+            text-transform: uppercase;
+            width: 200px;
+            font-size: 14px;
+        }
+        
+        .field-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        
+        .field-source {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            width: 200px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 50px;
+        }
+        
+        .generate-button {
+            background-color: #c0c0c0;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: #000000;
+            transition: background-color 0.3s;
+        }
+        
+        .generate-button:hover {
+            background-color: #a0a0a0;
         }
         
         .hidden {
             display: none;
         }
         
-        .pdf-preview {
-            background: #f8f9fa;
-            border: 2px dashed #bdc3c7;
-            border-radius: 8px;
-            padding: 30px;
+        .admin-container {
+            margin-top: 50px;
+        }
+        
+        .admin-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
             text-align: center;
-            margin-top: 20px;
+            margin-bottom: 50px;
         }
         
-        /* Admin Panel Styles */
-        .admin-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            z-index: 1000;
+        .upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+            gap: 30px;
         }
         
-        .admin-panel {
-            position: fixed;
-            top: 0;
-            right: -400px;
+        .upload-zone {
+            border: 3px dashed #c0c0c0;
+            padding: 50px;
+            text-align: center;
             width: 400px;
-            height: 100%;
-            background: white;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-            transition: right 0.3s ease;
-            z-index: 1001;
-            overflow-y: auto;
-        }
-        
-        .admin-panel.open {
-            right: 0;
-        }
-        
-        .admin-header {
-            background: #2c3e50;
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .admin-content {
-            padding: 20px;
-        }
-        
-        .admin-section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .admin-section h3 {
-            margin: 0 0 15px 0;
-            color: #2c3e50;
-        }
-        
-        .city-list {
-            display: grid;
-            gap: 10px;
-        }
-        
-        .city-item {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .city-item button {
-            padding: 5px 10px;
-            font-size: 12px;
-            margin-left: 5px;
-        }
-        
-        .field-selector {
-            display: grid;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        
-        .field-selector label {
-            display: flex;
-            align-items: center;
+            background-color: #f9f9f9;
             cursor: pointer;
+            transition: all 0.3s;
         }
         
-        .field-selector input[type="checkbox"] {
-            margin-right: 10px;
+        .upload-zone:hover {
+            border-color: #808080;
+            background-color: #f0f0f0;
         }
         
-        /* Coordinate Mapper Styles */
-        .mapper-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 2000;
+        .upload-zone.dragover {
+            border-color: #606060;
+            background-color: #e8e8e8;
+        }
+        
+        .upload-text {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .upload-subtext {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .file-input {
             display: none;
         }
         
-        .mapper-container {
+        .template-builder {
             display: flex;
-            height: 100%;
-            background: #f5f7fa;
+            gap: 20px;
+            margin-top: 20px;
+            height: 80vh;
         }
         
-        .mapper-sidebar {
-            width: 300px;
-            background: white;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            overflow-y: auto;
+        .field-palette {
+            width: 250px;
+            background-color: #f5f5f5;
             padding: 20px;
-        }
-        
-        .mapper-main {
-            flex: 1;
-            position: relative;
-            overflow: auto;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        
-        .mapper-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #ddd;
-        }
-        
-        .mapper-header h2 {
-            margin: 0;
-            color: #2c3e50;
-        }
-        
-        .pdf-canvas-container {
-            position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            background: white;
-            display: inline-block;
-        }
-        
-        #pdfCanvas {
             border: 1px solid #ddd;
+            overflow-y: auto;
         }
         
-        .field-section {
-            margin-bottom: 30px;
-        }
-        
-        .field-section h3 {
-            margin: 0 0 15px 0;
-            color: #34495e;
+        .palette-title {
             font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-align: center;
         }
         
         .draggable-field {
-            background: #3498db;
-            color: white;
-            padding: 10px 15px;
+            background-color: #c0c0c0;
+            padding: 10px;
             margin-bottom: 10px;
-            border-radius: 5px;
-            cursor: move;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            cursor: grab;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid #999;
+            transition: all 0.3s;
         }
         
         .draggable-field:hover {
-            background: #2980b9;
-            transform: translateX(5px);
+            background-color: #a0a0a0;
+            transform: translateY(-2px);
         }
         
-        .draggable-field.dragging {
-            opacity: 0.5;
+        .draggable-field:active {
+            cursor: grabbing;
         }
         
-        .static-text-btn, .checkbox-btn {
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 10px;
-            font-size: 14px;
-            transition: all 0.3s ease;
+        .pdf-canvas-container {
+            flex: 1;
+            position: relative;
+            border: 1px solid #ddd;
+            background-color: white;
+            overflow: auto;
         }
         
-        .checkbox-btn {
-            background: #e74c3c;
-        }
-        
-        .static-text-btn:hover {
-            background: #229954;
-        }
-        
-        .checkbox-btn:hover {
-            background: #c0392b;
+        .pdf-page {
+            position: relative;
+            margin: 20px auto;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .dropped-field {
             position: absolute;
-            padding: 5px 10px;
-            border-radius: 3px;
-            font-size: 12px;
+            background-color: rgba(52, 152, 219, 0.3);
+            border: 2px solid #3498db;
+            padding: 5px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #2c3e50;
             cursor: move;
-            user-select: none;
-            z-index: 10;
-        }
-        
-        .dropped-field.dynamic {
-            background: rgba(52, 152, 219, 0.8);
-            color: white;
-            border: 2px solid #2980b9;
-        }
-        
-        .dropped-field.static {
-            background: rgba(39, 174, 96, 0.8);
-            color: white;
-            border: 2px solid #27ae60;
-        }
-        
-        .dropped-field.checkbox {
-            background: rgba(231, 76, 60, 0.8);
-            color: white;
-            border: 2px solid #c0392b;
-            font-size: 20px;
-            padding: 2px 8px;
+            min-width: 100px;
+            min-height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
         }
         
         .dropped-field:hover {
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            z-index: 11;
+            background-color: rgba(52, 152, 219, 0.5);
         }
         
         .dropped-field.selected {
-            box-shadow: 0 0 0 3px #f39c12;
+            border-color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.3);
         }
         
-        .field-actions {
-            position: absolute;
-            top: -30px;
-            right: 0;
-            display: none;
-        }
-        
-        .dropped-field:hover .field-actions,
-        .dropped-field.selected .field-actions {
-            display: block;
-        }
-        
-        .field-actions button {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .mapper-controls {
+        .builder-controls {
             position: fixed;
             bottom: 20px;
             right: 20px;
             display: flex;
             gap: 10px;
-            z-index: 2001;
         }
         
-        .mapper-controls button {
-            padding: 15px 30px;
-            font-size: 16px;
+        .control-button {
+            background-color: #3498db;
+            color: white;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .save-mapping-btn {
-            background: #27ae60;
-            color: white;
-        }
-        
-        .save-mapping-btn:hover {
-            background: #229954;
-        }
-        
-        .cancel-mapping-btn {
-            background: #e74c3c;
-            color: white;
-        }
-        
-        .cancel-mapping-btn:hover {
-            background: #c0392b;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            z-index: 2002;
-            min-width: 400px;
-        }
-        
-        .modal.active {
-            display: block;
-        }
-        
-        .modal h3 {
-            margin: 0 0 20px 0;
-            color: #2c3e50;
-        }
-        
-        .modal input, .modal textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 2px solid #bdc3c7;
-            border-radius: 5px;
-        }
-        
-        .modal textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-        
-        .modal-buttons button {
             padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2001;
+        .control-button:hover {
+            background-color: #2980b9;
         }
         
-        .modal-overlay.active {
-            display: block;
+        .control-button.delete {
+            background-color: #e74c3c;
+        }
+        
+        .control-button.delete:hover {
+            background-color: #c0392b;
         }
     </style>
-    
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { 
-            getFirestore, 
-            collection, 
-            addDoc, 
-            getDocs, 
-            doc, 
-            setDoc, 
-            deleteDoc,
-            onSnapshot 
-        } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-        import { 
-            getStorage, 
-            ref, 
-            uploadBytes, 
-            getDownloadURL,
-            deleteObject 
-        } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-storage.js";
-        
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyA_RV1z3LhDRV7O-MUW1pnVaJyF55F_nNo",
-            authDomain: "solar-permit-tool-dd248.firebaseapp.com",
-            projectId: "solar-permit-tool-dd248",
-            storageBucket: "solar-permit-tool-dd248.firebasestorage.app",
-            messagingSenderId: "13653995817",
-            appId: "1:13653995817:web:c2fdc51c38a638276a0738"
-        };
-        
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-        
-        // Make Firebase functions available globally
-        window.db = db;
-        window.storage = storage;
-        window.collection = collection;
-        window.addDoc = addDoc;
-        window.getDocs = getDocs;
-        window.doc = doc;
-        window.setDoc = setDoc;
-        window.deleteDoc = deleteDoc;
-        window.onSnapshot = onSnapshot;
-        window.ref = ref;
-        window.uploadBytes = uploadBytes;
-        window.getDownloadURL = getDownloadURL;
-        window.deleteObject = deleteObject;
-    </script>
 </head>
 <body>
-    <h1>🌞 Solar Permit Automation Tool</h1>
-    
-    <div class="step-indicator">
-        <div class="step active" id="step1">Step 1: Select City</div>
-        <div class="step" id="step2">Step 2: Fill Form</div>
-        <div class="step" id="step3">Step 3: Generate PDF</div>
-    </div>
-    
-    <!-- Step 1: City Selection -->
-    <div class="form-container" id="citySelection">
-        <h2>Select City/Authority Having Jurisdiction (AHJ)</h2>
-        <p>Choose the correct city to load the appropriate permit form:</p>
-        
-        <div class="city-selection">
-            <div class="city-card" onclick="selectCity('lee_summit', 'Lee\'s Summit, MO')">
-                <h3>Lee's Summit, MO</h3>
-            </div>
-            
-            <div class="city-card" onclick="selectCity('raymore', 'Raymore, MO')">
-                <h3>Raymore, MO</h3>
-            </div>
-        </div>
-        
-        <button onclick="proceedToForm()" id="proceedBtn" disabled>Continue to Form →</button>
-    </div>
-    
-    <!-- Step 2: Form Fields -->
-    <div class="form-container hidden" id="formFields">
-        <h2>Fill Permit Information</h2>
-        
-        <form id="permitForm">
-            <h3>Customer Information</h3>
-            <div id="dynamicFields">
-                <!-- Fields will be dynamically inserted here -->
-            </div>
-            
-            <div class="form-row">
-                <button type="button" onclick="generatePDF()">📄 Generate PDF</button>
-                <button type="button" onclick="goBackToCity()">← Back to City Selection</button>
-            </div>
-        </form>
-    </div>
-    
-    <!-- Step 3: PDF Preview -->
-    <div class="form-container hidden" id="pdfPreview">
-        <h2>PDF Generated Successfully</h2>
-        <div class="pdf-preview">
-            <h3>🎉 Your permit is ready!</h3>
-            <p>The PDF has been generated with the exact format required by <span id="selectedCityName"></span></p>
-            <button onclick="downloadPDF()">📥 Download PDF</button>
-            <button onclick="startOver()">🔄 Process Another Permit</button>
+    <!-- Landing Page -->
+    <div id="landingPage">
+        <h1>Solar Permit Automation Tool</h1>
+        <div class="container">
+            <button class="main-button" onclick="showCitySelection()">
+                Click Here to Create Permit
+            </button>
+            <button class="main-button" onclick="showAdminPage()">
+                Click Here to Add or Edit City Permit
+            </button>
         </div>
     </div>
 
-    <!-- Coordinate Mapper -->
-    <div class="mapper-overlay" id="coordinateMapper">
-        <div class="mapper-container">
-            <!-- Sidebar with draggable fields -->
-            <div class="mapper-sidebar">
-                <div class="mapper-header">
-                    <h2>Field Mapper</h2>
-                </div>
-                
-                <!-- Dynamic Fields Section -->
-                <div class="field-section">
-                    <h3>📋 Dynamic Fields</h3>
-                    <div id="dynamicFieldsList">
-                        <!-- Will be populated based on city's required fields -->
-                    </div>
-                </div>
-                
-                <!-- Static Elements Section -->
-                <div class="field-section">
-                    <h3>📝 Static Elements</h3>
-                    <button class="static-text-btn" onclick="addStaticText()">+ Add Static Text</button>
-                    <button class="checkbox-btn" onclick="addCheckbox()">☑ Add Checkbox</button>
-                </div>
-                
-                <!-- Instructions -->
-                <div class="field-section" style="background: #ecf0f1; padding: 15px; border-radius: 5px;">
-                    <h3>📖 Instructions</h3>
-                    <p style="margin: 5px 0; font-size: 12px;">• Drag fields onto the PDF</p>
-                    <p style="margin: 5px 0; font-size: 12px;">• Click to select and reposition</p>
-                    <p style="margin: 5px 0; font-size: 12px;">• Right-click to delete</p>
-                    <p style="margin: 5px 0; font-size: 12px;">• Save when complete</p>
-                </div>
-            </div>
-            
-            <!-- Main area with PDF -->
-            <div class="mapper-main">
-                <div class="pdf-canvas-container" id="pdfCanvasContainer">
-                    <canvas id="pdfCanvas"></canvas>
-                    <!-- Dropped fields will be positioned here -->
-                </div>
-            </div>
-        </div>
+    <!-- City Selection Page -->
+    <div id="citySelectionPage" class="hidden">
+        <div class="city-title">Choose Your City/Solar Permit</div>
+        <button class="back-button" onclick="showLandingPage()">Go Back to Landing Page</button>
         
-        <!-- Control buttons -->
-        <div class="mapper-controls">
-            <button class="save-mapping-btn" onclick="saveFieldMapping()">💾 Save Field Mapping</button>
-            <button class="cancel-mapping-btn" onclick="closeMapper()">❌ Cancel</button>
-        </div>
-    </div>
-    
-    <!-- Modal for static text input -->
-    <div class="modal-overlay" id="modalOverlay"></div>
-    <div class="modal" id="staticTextModal">
-        <h3>Add Static Text</h3>
-        <textarea id="staticTextInput" placeholder="Enter text that will always appear on this PDF..."></textarea>
-        <div class="modal-buttons">
-            <button onclick="confirmStaticText()" style="background: #27ae60; color: white;">Add Text</button>
-            <button onclick="closeModal()" style="background: #e74c3c; color: white;">Cancel</button>
-        </div>
-    </div>
-    
-    <!-- Modal for checkbox options -->
-    <div class="modal" id="checkboxModal">
-        <h3>Add Checkbox</h3>
-        <label style="display: block; margin-bottom: 10px;">
-            <input type="radio" name="checkboxType" value="checked" checked> Always Checked ☑
-        </label>
-        <label style="display: block; margin-bottom: 10px;">
-            <input type="radio" name="checkboxType" value="unchecked"> Always Unchecked ☐
-        </label>
-        <label style="display: block; margin-bottom: 15px;">
-            <input type="radio" name="checkboxType" value="dynamic"> Based on Form Field:
-        </label>
-        <select id="checkboxFieldSelect" style="width: 100%; margin-bottom: 15px;">
-            <option value="">Select a field...</option>
-        </select>
-        <div class="modal-buttons">
-            <button onclick="confirmCheckbox()" style="background: #27ae60; color: white;">Add Checkbox</button>
-            <button onclick="closeModal()" style="background: #e74c3c; color: white;">Cancel</button>
+        <div class="city-container">
+            <button class="city-button" onclick="selectCity('lees_summit', 'Lee\'s Summit, MO')">
+                Lee's Summit, MO
+            </button>
         </div>
     </div>
 
-    <!-- Admin Button (floating) -->
-    <button class="admin-button" onclick="toggleAdminPanel()">🔧 Admin</button>
-    
-    <!-- Admin Panel (slide-out) -->
-    <div class="admin-panel" id="adminPanel">
-        <div class="admin-header">
-            <h2>Admin Panel</h2>
-            <button onclick="toggleAdminPanel()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">✖</button>
+    <!-- Form Page -->
+    <div id="formPage" class="hidden">
+        <div class="form-title">Lee's Summit, MO</div>
+        <div class="form-subtitle">Fill Permit Information</div>
+        
+        <button class="subhub-button" onclick="connectToSubHub()">Connect to SubHub</button>
+        
+        <div class="form-container">
+            <div class="form-field">
+                <label class="field-label">Customer Name:</label>
+                <input type="text" class="field-input" id="customerName">
+                <span class="field-source">Flat Enter or Pull from SubHub</span>
+            </div>
         </div>
         
-        <div class="admin-content">
-            <!-- Add New City Section -->
-            <div class="admin-section">
-                <h3>Add New City</h3>
-                <div class="form-group">
-                    <label>City Name:</label>
-                    <input type="text" id="newCityName" placeholder="e.g., Independence, MO">
-                </div>
-                <div class="form-group">
-                    <label>Select Required Fields:</label>
-                    <div class="field-selector" id="fieldSelector">
-                        <!-- Will be populated dynamically -->
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Upload PDF Template:</label>
-                    <input type="file" id="newCityPDF" accept=".pdf">
-                </div>
-                <button onclick="addNewCity()">Add City</button>
+        <div class="action-buttons">
+            <button class="generate-button" onclick="generatePermit()">
+                Generate Permit Application
+            </button>
+            <button class="back-button" onclick="showLandingPage()">
+                Go Back to Landing Page
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Page -->
+    <div id="adminPage" class="hidden">
+        <div class="admin-title">Add or Edit Existing City</div>
+        
+        <div class="city-container">
+            <button class="city-button" onclick="addNewCity()">
+                Add New City
+            </button>
+            <button class="city-button" onclick="editCity('lees_summit')">
+                Lee's Summit, MO
+            </button>
+        </div>
+        
+        <div style="text-align: center; margin-top: 50px;">
+            <button class="back-button" onclick="showLandingPage()">
+                Go Back to Landing Page
+            </button>
+        </div>
+    </div>
+
+    <!-- Upload Template Page -->
+    <div id="uploadTemplatePage" class="hidden">
+        <div class="admin-title">Add New City - Upload PDF Template</div>
+        
+        <div class="upload-container">
+            <div class="upload-zone" onclick="document.getElementById('pdfFileInput').click()" 
+                 ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div class="upload-text">Click to Upload PDF Template</div>
+                <div class="upload-subtext">or drag and drop PDF file here</div>
+                <div class="upload-subtext">Supported format: PDF</div>
             </div>
-                        
-            <!-- Existing Cities Section -->
-            <div class="admin-section">
-                <h3>Manage Cities</h3>
-                <div class="city-list" id="cityList">
-                    <!-- Will be populated dynamically -->
+            
+            <input type="file" id="pdfFileInput" class="file-input" accept=".pdf" onchange="handleFileSelect(event)">
+            
+            <div>
+                <input type="text" placeholder="Enter City Name (e.g., Springfield, MO)" 
+                       id="newCityName" style="padding: 10px; width: 300px; margin-bottom: 20px;">
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 50px;">
+            <button class="back-button" onclick="showAdminPage()">
+                Go Back to Admin
+            </button>
+        </div>
+    </div>
+
+    <!-- Template Builder Page -->
+    <div id="templateBuilderPage" class="hidden">
+        <div class="admin-title">PDF Template Builder - <span id="builderCityName">Lee's Summit, MO</span></div>
+        
+        <div class="template-builder">
+            <!-- Field Palette -->
+            <div class="field-palette">
+                <div class="palette-title">Drag Fields to PDF</div>
+                
+                <div class="draggable-field" draggable="true" data-field-type="customerName">
+                    Customer Name
                 </div>
             </div>
+            
+            <!-- PDF Canvas -->
+            <div class="pdf-canvas-container" ondrop="handleFieldDrop(event)" ondragover="allowDrop(event)">
+                <canvas id="pdfCanvas" class="pdf-page"></canvas>
+            </div>
+        </div>
+        
+        <!-- Builder Controls -->
+        <div class="builder-controls">
+            <button class="control-button delete" onclick="deleteSelectedField()" style="display: none;" id="deleteButton">
+                Delete Field
+            </button>
+            <button class="control-button" onclick="saveTemplate()">
+                Save Template
+            </button>
+            <button class="control-button" onclick="showAdminPage()">
+                Cancel
+            </button>
         </div>
     </div>
 
     <script>
-        // Global variables
         let selectedCity = null;
         let selectedCityName = '';
-        let citiesData = {}; // Store cities data from Firebase
-        
-        // Master list of all possible fields
-        const masterFields = {
-            customerName: {
-                label: 'Customer Name',
-                placeholder: 'Enter customer name',
-                type: 'text'
-            },
-            customerAddress: {
-                label: 'Customer Address',
-                placeholder: '123 Main St, City, State ZIP',
-                type: 'text'
-            },
-            customerEmail: {
-                label: 'Customer Email',
-                placeholder: 'customer@email.com',
-                type: 'email'
-            },
-            customerPhone: {
-                label: 'Customer Phone',
-                placeholder: '(816) 555-1234',
-                type: 'tel'
-            },
-            systemSize: {
-                label: 'System Size (kW)',
-                placeholder: '7.650',
-                type: 'number',
-                step: '0.001'
-            },
-            panelManufacturer: {
-                label: 'Panel Manufacturer',
-                placeholder: 'e.g., REC, Panasonic',
-                type: 'text'
-            },
-            panelModel: {
-                label: 'Panel Model #',
-                placeholder: 'Enter panel model number',
-                type: 'text'
-            },
-            inverterManufacturer: {
-                label: 'Inverter Manufacturer',
-                placeholder: 'e.g., Enphase, SolarEdge',
-                type: 'text'
-            },
-            inverterModel: {
-                label: 'Inverter Model #',
-                placeholder: 'Enter inverter model number',
-                type: 'text'
-            }
-        };
-        
-        // City-specific form configurations (will be replaced by Firebase data)
-        const cityConfigs = {
-            lee_summit: {
-                name: 'Lee\'s Summit, MO',
-                formCode: 'LS-ESP-2024',
-                processingTime: '7-10 days',
-                requiredFields: ['customerName', 'customerEmail', 'customerPhone', 'systemSize']
-            },
-            raymore: {
-                name: 'Raymore, MO',
-                formCode: 'RM-SIP-2024',
-                processingTime: '5-7 days',
-                requiredFields: ['customerName', 'customerAddress', 'customerEmail', 'systemSize', 'panelManufacturer']
-            }
-        };
-
-        // Coordinate Mapper Variables
-        let currentPdfUrl = null;
-        let currentCityId = null;
-        let pdfDoc = null;
-        let pdfPage = null;
-        let fieldMappings = [];
+        let currentPdfFile = null;
+        let droppedFields = [];
         let selectedField = null;
-        let isDragging = false;
-        let dragOffset = { x: 0, y: 0 };
-
-        // Main App Functions
+        
+        function showLandingPage() {
+            // Hide all pages
+            document.getElementById('landingPage').classList.remove('hidden');
+            document.getElementById('citySelectionPage').classList.add('hidden');
+            document.getElementById('formPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.add('hidden');
+            document.getElementById('uploadTemplatePage').classList.add('hidden');
+            document.getElementById('templateBuilderPage').classList.add('hidden');
+        }
+        
+        function showCitySelection() {
+            document.getElementById('landingPage').classList.add('hidden');
+            document.getElementById('citySelectionPage').classList.remove('hidden');
+            document.getElementById('formPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.add('hidden');
+            document.getElementById('uploadTemplatePage').classList.add('hidden');
+            document.getElementById('templateBuilderPage').classList.add('hidden');
+        }
+        
+        function showAdminPage() {
+            document.getElementById('landingPage').classList.add('hidden');
+            document.getElementById('citySelectionPage').classList.add('hidden');
+            document.getElementById('formPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.remove('hidden');
+            document.getElementById('uploadTemplatePage').classList.add('hidden');
+            document.getElementById('templateBuilderPage').classList.add('hidden');
+        }
+        
+        function showUploadPage() {
+            document.getElementById('landingPage').classList.add('hidden');
+            document.getElementById('citySelectionPage').classList.add('hidden');
+            document.getElementById('formPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.add('hidden');
+            document.getElementById('uploadTemplatePage').classList.remove('hidden');
+            document.getElementById('templateBuilderPage').classList.add('hidden');
+        }
+        
+        function showTemplateBuilder() {
+            document.getElementById('landingPage').classList.add('hidden');
+            document.getElementById('citySelectionPage').classList.add('hidden');
+            document.getElementById('formPage').classList.add('hidden');
+            document.getElementById('adminPage').classList.add('hidden');
+            document.getElementById('uploadTemplatePage').classList.add('hidden');
+            document.getElementById('templateBuilderPage').classList.remove('hidden');
+        }
+        
         function selectCity(cityId, cityName) {
-            console.log('selectCity called with:', cityId, cityName);
-            // Remove previous selection
-            document.querySelectorAll('.city-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Add selection to clicked card - find the card that was clicked
-            const clickedCard = Array.from(document.querySelectorAll('.city-card')).find(card => 
-                card.textContent.includes(cityName)
-            );
-            if (clickedCard) {
-                clickedCard.classList.add('selected');
-            }
-            
             selectedCity = cityId;
             selectedCityName = cityName;
             
-            // Enable proceed button
-            document.getElementById('proceedBtn').disabled = false;
+            // Show the form page
+            document.getElementById('citySelectionPage').classList.add('hidden');
+            document.getElementById('formPage').classList.remove('hidden');
         }
-
-        function proceedToForm() {
-            if (!selectedCity) return;
-            
-            // Update step indicators
-            document.getElementById('step1').classList.remove('active');
-            document.getElementById('step1').classList.add('completed');
-            document.getElementById('step2').classList.add('active');
-            
-            // Hide city selection, show form
-            document.getElementById('citySelection').classList.add('hidden');
-            document.getElementById('formFields').classList.remove('hidden');
-            
-            // Generate dynamic fields based on city requirements
-            generateDynamicFields();
+        
+        function connectToSubHub() {
+            // Dead function - just show a message, no actual connection
+            alert('SubHub connection button clicked.\n\n(This is just a placeholder - no actual connection occurs)');
         }
-
-        function toggleAdminPanel() {
-            const panel = document.getElementById('adminPanel');
-            panel.classList.toggle('open');
+        
+        function generatePermit() {
+            // Simple validation for customer name
+            const customerName = document.getElementById('customerName').value.trim();
+            
+            if (!customerName) {
+                document.getElementById('customerName').style.border = '2px solid #e74c3c';
+                alert('Please enter customer name');
+                return;
+            } else {
+                document.getElementById('customerName').style.border = '1px solid #ccc';
+            }
+            
+            alert(`Permit application generated successfully for Lee's Summit, MO!\n\nCustomer: ${customerName}\n\n(This is a demo - no actual PDF is generated)`);
         }
-
-        function generatePDF() {
-            // Get city config from Firebase data or fallback to default
-            const config = citiesData[selectedCity] || cityConfigs[selectedCity];
+        
+        function addNewCity() {
+            showUploadPage();
+        }
+        
+        function editCity(cityId) {
+            // Go to template builder for Lee's Summit
+            document.getElementById('builderCityName').textContent = "Lee's Summit, MO";
+            showTemplateBuilder();
             
-            // Validate required fields
-            let isValid = true;
+            // Load sample PDF
+            loadSamplePDF();
+        }
+        
+        // PDF Upload Functions
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('dragover');
+        }
+        
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('dragover');
+        }
+        
+        function handleDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
             
-            config.requiredFields.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (!field.value.trim()) {
-                    field.style.border = '2px solid #e74c3c';
-                    isValid = false;
-                } else {
-                    field.style.border = '2px solid #27ae60';
-                }
-            });
-            
-            if (!isValid) {
-                alert('Please fill in all required fields');
+            const files = event.dataTransfer.files;
+            if (files.length > 0 && files[0].type === 'application/pdf') {
+                handlePDFFile(files[0]);
+            } else {
+                alert('Please upload a PDF file');
+            }
+        }
+        
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'application/pdf') {
+                handlePDFFile(file);
+            } else {
+                alert('Please select a PDF file');
+            }
+        }
+        
+        function handlePDFFile(file) {
+            const cityName = document.getElementById('newCityName').value.trim();
+            if (!cityName) {
+                alert('Please enter a city name first');
                 return;
             }
             
-            // Update step indicators
-            document.getElementById('step2').classList.remove('active');
-            document.getElementById('step2').classList.add('completed');
-            document.getElementById('step3').classList.add('active');
+            currentPdfFile = file;
+            document.getElementById('builderCityName').textContent = cityName;
             
-            // Hide form, show PDF preview
-            document.getElementById('formFields').classList.add('hidden');
-            document.getElementById('pdfPreview').classList.remove('hidden');
+            // Load PDF into canvas
+            loadPDFIntoCanvas(file);
             
-            // Update selected city name in preview
-            document.getElementById('selectedCityName').textContent = selectedCityName;
-        }
-
-        function goBackToCity() {
-            // Update step indicators
-            document.getElementById('step1').classList.add('active');
-            document.getElementById('step1').classList.remove('completed');
-            document.getElementById('step2').classList.remove('active');
-            
-            // Hide form, show city selection
-            document.getElementById('formFields').classList.add('hidden');
-            document.getElementById('citySelection').classList.remove('hidden');
-        }
-
-        function startOver() {
-            // Reset all steps
-            document.getElementById('step1').classList.add('active');
-            document.getElementById('step1').classList.remove('completed');
-            document.getElementById('step2').classList.remove('active', 'completed');
-            document.getElementById('step3').classList.remove('active', 'completed');
-            
-            // Show city selection
-            document.getElementById('citySelection').classList.remove('hidden');
-            document.getElementById('formFields').classList.add('hidden');
-            document.getElementById('pdfPreview').classList.add('hidden');
-            
-            // Reset form
-            document.getElementById('permitForm').reset();
-            selectedCity = null;
-            selectedCityName = '';
-            document.getElementById('proceedBtn').disabled = true;
-            
-            // Remove city selection
-            document.querySelectorAll('.city-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Reset field borders
-            document.querySelectorAll('input').forEach(input => {
-                input.style.border = '2px solid #bdc3c7';
-                input.style.backgroundColor = 'transparent';
-            });
+            // Go to template builder
+            showTemplateBuilder();
         }
         
-        function generateDynamicFields() {
-            // Get city config from Firebase data or fallback to default
-            const config = citiesData[selectedCity] || cityConfigs[selectedCity];
-            const fieldsContainer = document.getElementById('dynamicFields');
-            fieldsContainer.innerHTML = ''; // Clear existing fields
+        function loadPDFIntoCanvas(file) {
+            const canvas = document.getElementById('pdfCanvas');
+            const ctx = canvas.getContext('2d');
             
-            // Create fields based on city requirements
-            config.requiredFields.forEach(fieldId => {
-                const fieldConfig = masterFields[fieldId];
-                if (fieldConfig) {
-                    const fieldGroup = document.createElement('div');
-                    fieldGroup.className = 'form-group';
-                    
-                    const label = document.createElement('label');
-                    label.textContent = fieldConfig.label + ':';
-                    fieldGroup.appendChild(label);
-                    
-                    const input = document.createElement('input');
-                    input.type = fieldConfig.type;
-                    input.id = fieldId;
-                    input.placeholder = fieldConfig.placeholder;
-                    input.required = true;
-                    
-                    if (fieldConfig.step) {
-                        input.step = fieldConfig.step;
-                    }
-                    
-                    fieldGroup.appendChild(input);
-                    fieldsContainer.appendChild(fieldGroup);
-                }
-            });
+            // Create a sample form
+            canvas.width = 612; // Standard letter width
+            canvas.height = 792; // Standard letter height
+            
+            // Draw form background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw form content
+            ctx.fillStyle = '#000000';
+            ctx.font = '16px Arial';
+            ctx.fillText('LEE\'S SUMMIT SOLAR PERMIT APPLICATION', 50, 50);
+            
+            ctx.font = '12px Arial';
+            ctx.fillText('Customer Information:', 50, 100);
+            
+            // Draw form lines
+            for (let i = 0; i < 10; i++) {
+                const y = 140 + (i * 40);
+                ctx.strokeStyle = '#cccccc';
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(550, y);
+                ctx.stroke();
+            }
+            
+            alert('PDF loaded! Drag the "Customer Name" field onto the form where you want it to appear.');
         }
         
-        // Admin Panel Functions
-        function initializeFieldSelector() {
-            const selector = document.getElementById('fieldSelector');
-            selector.innerHTML = '';
+        function loadSamplePDF() {
+            // Load sample PDF for editing existing cities
+            const canvas = document.getElementById('pdfCanvas');
+            const ctx = canvas.getContext('2d');
             
-            Object.entries(masterFields).forEach(([fieldId, field]) => {
-                const label = document.createElement('label');
-                label.innerHTML = `
-                    <input type="checkbox" value="${fieldId}">
-                    ${field.label}
-                `;
-                selector.appendChild(label);
-            });
+            canvas.width = 612;
+            canvas.height = 792;
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#000000';
+            ctx.font = '16px Arial';
+            ctx.fillText('LEE\'S SUMMIT SOLAR PERMIT APPLICATION', 50, 50);
+            
+            ctx.font = '12px Arial';
+            ctx.fillText('Customer Information:', 50, 100);
+            
+            for (let i = 0; i < 10; i++) {
+                const y = 140 + (i * 40);
+                ctx.strokeStyle = '#cccccc';
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(550, y);
+                ctx.stroke();
+            }
         }
         
-async function addNewCity() {
-    const name = document.getElementById('newCityName').value.trim();
-    const pdfFile = document.getElementById('newCityPDF').files[0];
-
-    // Get selected fields
-    const selectedFields = [];
-    document.querySelectorAll('#fieldSelector input[type="checkbox"]:checked').forEach(cb => {
-        selectedFields.push(cb.value);
-    });
-
-    // Validate required data
-    if (!name) {
-        alert('Please enter a city name');
-        return;
-    }
-    if (selectedFields.length === 0) {
-        alert('Please select at least one required field');
-        return;
-    }
-
-    let pdfUrl = null;
-
-    // Upload PDF if provided
-    if (pdfFile) {
-        const cityId = name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_');
-        const storageRef = window.ref(window.storage, `templates/${cityId}_${Date.now()}.pdf`);
-        const snapshot = await window.uploadBytes(storageRef, pdfFile);
-        pdfUrl = await window.getDownloadURL(snapshot.ref);
-    }
-    if (pdfUrl) {
-    cityData.pdfTemplateUrl = pdfUrl;
-}
-
-    // Build city data object
-    const cityData = {
-        name: name,
-        requiredFields: selectedFields,
-        createdAt: new Date()
-    };
-    if (pdfUrl) {
-        cityData.pdfTemplateUrl = pdfUrl;
-    }
-
-    const cityId = name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_');
-    await window.setDoc(window.doc(window.db, 'cities', cityId), cityData);
-
-    // Clear the form (reset inputs and checkboxes)
-    document.getElementById('newCityName').value = '';
-    document.getElementById('newCityPDF').value = '';
-    document.querySelectorAll('#fieldSelector input[type="checkbox"]').forEach(cb => {
-        cb.checked = false;
-    });
-
-    alert('City added successfully!');
-}        
-        async function loadCitiesFromFirebase() {
-            if (!window.db) return;
-            
-            try {
-                const citiesRef = window.collection(window.db, 'cities');
-                const snapshot = await window.getDocs(citiesRef);
-                
-                citiesData = {};
-                snapshot.forEach((doc) => {
-                    citiesData[doc.id] = { id: doc.id, ...doc.data() };
+        // Drag and Drop Functions for Fields
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add drag start event to draggable field
+            document.querySelectorAll('.draggable-field').forEach(field => {
+                field.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.dataset.fieldType);
+                    e.dataTransfer.setData('text/html', this.textContent);
                 });
+            });
+        });
+        
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+        
+        function handleFieldDrop(event) {
+            event.preventDefault();
+            
+            const fieldType = event.dataTransfer.getData('text/plain');
+            const fieldText = event.dataTransfer.getData('text/html');
+            
+            if (!fieldType) return;
+            
+            // Get drop position relative to the canvas container
+            const rect = event.currentTarget.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // Create dropped field element
+            const droppedField = document.createElement('div');
+            droppedField.className = 'dropped-field';
+            droppedField.textContent = fieldText;
+            droppedField.dataset.fieldType = fieldType;
+            droppedField.style.left = x + 'px';
+            droppedField.style.top = y + 'px';
+            
+            // Add click event to select field
+            droppedField.addEventListener('click', function() {
+                selectDroppedField(this);
+            });
+            
+            // Add to container
+            event.currentTarget.appendChild(droppedField);
+            
+            // Add to tracking array
+            droppedFields.push({
+                element: droppedField,
+                fieldType: fieldType,
+                x: x,
+                y: y
+            });
+            
+            console.log('Field dropped:', fieldType, 'at position:', x, y);
+        }
+        
+        function selectDroppedField(fieldElement) {
+            // Remove previous selection
+            if (selectedField) {
+                selectedField.classList.remove('selected');
+            }
+            
+            // Select new field
+            selectedField = fieldElement;
+            fieldElement.classList.add('selected');
+            
+            // Show delete button
+            document.getElementById('deleteButton').style.display = 'block';
+            
+            console.log('Field selected:', fieldElement.dataset.fieldType);
+        }
+        
+        function deleteSelectedField() {
+            if (selectedField) {
+                console.log('Deleting field:', selectedField.dataset.fieldType);
                 
-                updateCitySelection();
-                updateAdminCityList();
+                // Remove from DOM
+                selectedField.remove();
                 
-            } catch (error) {
-                console.error('Error loading cities:', error);
+                // Remove from tracking array
+                droppedFields = droppedFields.filter(field => field.element !== selectedField);
+                
+                // Clear selection
+                selectedField = null;
+                document.getElementById('deleteButton').style.display = 'none';
             }
         }
         
-        function updateCitySelection() {
-            const citySelection = document.querySelector('.city-selection');
-            citySelection.innerHTML = '';
-            
-            // If no cities in Firebase, use default
-            const cities = Object.keys(citiesData).length > 0 ? citiesData : cityConfigs;
-            
-            Object.entries(cities).forEach(([cityId, city]) => {
-                const cityCard = document.createElement('div');
-                cityCard.className = 'city-card';
-                cityCard.innerHTML = `<h3>${city.name}</h3>`;
-                cityCard.onclick = function() {
-                    selectCity(cityId, city.name);
-                };
-                citySelection.appendChild(cityCard);
-            });
-        }
-        
-        function updateAdminCityList() {
-            const cityList = document.getElementById('cityList');
-            cityList.innerHTML = '';
-            
-            Object.entries(citiesData).forEach(([cityId, city]) => {
-                const cityItem = document.createElement('div');
-                cityItem.className = 'city-item';
-                
-                // Show PDF status
-                const pdfStatus = city.pdfTemplateUrl ? '✓ PDF' : '✗ No PDF';
-                
-                cityItem.innerHTML = `
-                    <div>
-                        <strong>${city.name}</strong><br>
-                        <small>${city.formCode} | ${city.requiredFields.length} fields | ${pdfStatus}</small>
-                    </div>
-                    <div>
-                        <button onclick="editCityMapping('${cityId}')" style="background: #3498db; margin-right: 5px;">Edit Mapping</button>
-                        <button onclick="deleteCity('${cityId}')" style="background: #e74c3c;">Delete</button>
-                    </div>
-                `;
-                cityList.appendChild(cityItem);
-            });
-        }
-        
-        async function deleteCity(cityId) {
-            if (!confirm('Are you sure you want to delete this city?')) return;
-            
-            try {
-                const city = citiesData[cityId];
-                
-                // Delete PDF from storage if exists
-                if (city.pdfTemplateUrl) {
-                    try {
-                        const storageRef = window.ref(window.storage, city.pdfTemplateUrl);
-                        await window.deleteObject(storageRef);
-                    } catch (error) {
-                        console.log('Could not delete PDF:', error);
-                    }
-                }
-                
-                // Delete from Firestore
-                await window.deleteDoc(window.doc(window.db, 'cities', cityId));
-                
-                alert('City deleted successfully!');
-                
-            } catch (error) {
-                console.error('Error deleting city:', error);
-                alert('Error deleting city: ' + error.message);
-            }
-        }
-        
-        async function downloadPDF() {
-            try {
-                // Get city config from Firebase data or fallback to default
-                const config = citiesData[selectedCity] || cityConfigs[selectedCity];
-                const formData = {};
-                
-                config.requiredFields.forEach(fieldId => {
-                    const field = document.getElementById(fieldId);
-                    if (field) {
-                        formData[fieldId] = field.value;
-                    }
-                });
-                
-                let pdfBytes;
-                
-                // Check if city has a PDF template
-                // Check if city has a PDF template
-if (config.pdfTemplateUrl) {
-    try {
-        // Always resolve the storage reference to a CORS-friendly URL
-        const storageRef = window.ref(window.storage, config.pdfTemplateUrl);
-        const downloadURL = await window.getDownloadURL(storageRef);
-        const response = await fetch(downloadURL);
-        const templateBytes = await response.arrayBuffer();
-        pdfBytes = await fillPDFTemplate(templateBytes, formData);
-    } catch (error) {
-        console.error('Error using PDF template:', error);
-        // Fallback to creating PDF from scratch
-        pdfBytes = await createPermitPDF(selectedCity, formData);
-    }
-} else {
-    // Create PDF from scratch
-    pdfBytes = await createPermitPDF(selectedCity, formData);
-}
-                
-                // Download the PDF
-                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${selectedCityName.replace(/[^a-z0-9]/gi, '_')}_Solar_Permit.pdf`;
-                a.click();
-                URL.revokeObjectURL(url);
-                
-            } catch (error) {
-                console.error('PDF generation failed:', error);
-                alert('Error generating PDF. Please try again.');
-            }
-        }
-        
-        async function fillPDFTemplate(templateBytes, formData) {
-            try {
-                const { PDFDocument, rgb } = PDFLib;
-                const pdfDoc = await PDFDocument.load(templateBytes);
-                const pages = pdfDoc.getPages();
-                const firstPage = pages[0];
-                
-                // Get the city's field mappings
-                const city = citiesData[selectedCity];
-                const mappings = city.fieldMappings || [];
-                
-                if (mappings.length === 0) {
-                    console.log('No field mappings found, returning template as-is');
-                    return await pdfDoc.save();
-                }
-                
-                // Apply each mapping
-                for (const mapping of mappings) {
-                    try {
-                        if (mapping.type === 'dynamic') {
-                            // Dynamic field - get value from form data
-                            const value = formData[mapping.fieldId] || '';
-                            if (value) {
-                                firstPage.drawText(String(value), {
-                                    x: mapping.x,
-                                    y: firstPage.getHeight() - mapping.y - 20, // Adjust for coordinate system
-                                    size: 12,
-                                    color: rgb(0, 0, 0)
-                                });
-                            }
-                        } else if (mapping.type === 'static') {
-                            // Static text - always show
-                            firstPage.drawText(mapping.text, {
-                                x: mapping.x,
-                                y: firstPage.getHeight() - mapping.y - 20,
-                                size: 12,
-                                color: rgb(0, 0, 0)
-                            });
-                        } else if (mapping.type === 'checkbox') {
-                            // Checkbox - determine if checked
-                            let isChecked = false;
-                            
-                            if (mapping.checked !== undefined) {
-                                // Static checkbox
-                                isChecked = mapping.checked;
-                            } else if (mapping.fieldId) {
-                                // Dynamic checkbox based on field value
-                                const value = formData[mapping.fieldId];
-                                isChecked = !!value && value !== 'false' && value !== '0';
-                            }
-                            
-                            const checkMark = isChecked ? '✓' : '';
-                            if (checkMark) {
-                                firstPage.drawText(checkMark, {
-                                    x: mapping.x,
-                                    y: firstPage.getHeight() - mapping.y - 20,
-                                    size: 16,
-                                    color: rgb(0, 0, 0)
-                                });
-                            }
-                        }
-                    } catch (error) {
-                        console.error(`Error applying mapping ${mapping.id}:`, error);
-                    }
-                }
-                
-                return await pdfDoc.save();
-            } catch (error) {
-                console.error('Error filling PDF template:', error);
-                throw error;
-            }
-        }
-        
-        async function createPermitPDF(cityId, formData) {
-            // Access PDFLib from the global scope
-            const { PDFDocument, rgb, StandardFonts } = PDFLib;
-            
-            // Create a new PDF document
-            const pdfDoc = await PDFDocument.create();
-            const page = pdfDoc.addPage([612, 792]); // Standard letter size
-            
-            // Embed fonts
-            const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-            const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-            
-            // Add title
-            page.drawText(`Solar Permit Application`, {
-                x: 50,
-                y: 750,
-                size: 20,
-                font: helveticaBold,
-                color: rgb(0, 0, 0),
-            });
-            
-            // Add city and form info
-            const cityConfig = citiesData[cityId] || cityConfigs[cityId];
-            page.drawText(`${cityConfig.name}`, {
-                x: 50,
-                y: 720,
-                size: 16,
-                font: helveticaFont,
-                color: rgb(0, 0, 0),
-            });
-            
-            page.drawText(`Form Code: ${cityConfig.formCode}`, {
-                x: 50,
-                y: 695,
-                size: 12,
-                font: helveticaFont,
-                color: rgb(0.5, 0.5, 0.5),
-            });
-            
-            // Add customer information section
-            let yPosition = 650;
-            
-            page.drawText('PERMIT INFORMATION', {
-                x: 50,
-                y: yPosition,
-                size: 14,
-                font: helveticaBold,
-                color: rgb(0, 0, 0),
-            });
-            
-            yPosition -= 30;
-            
-            // Dynamically add fields based on what's in formData
-            cityConfig.requiredFields.forEach(fieldId => {
-                if (formData[fieldId]) {
-                    const fieldConfig = masterFields[fieldId];
-                    
-                    page.drawText(fieldConfig.label + ':', {
-                        x: 50,
-                        y: yPosition,
-                        size: 12,
-                        font: helveticaBold,
-                        color: rgb(0, 0, 0),
-                    });
-                    
-                    page.drawText(formData[fieldId], {
-                        x: 200,
-                        y: yPosition,
-                        size: 12,
-                        font: helveticaFont,
-                        color: rgb(0, 0, 0),
-                    });
-                    
-                    yPosition -= 30;
-                }
-            });
-            
-            // Add footer with date and signature line
-            const currentDate = new Date().toLocaleDateString();
-            
-            page.drawText(`Date: ${currentDate}`, {
-                x: 50,
-                y: 100,
-                size: 10,
-                font: helveticaFont,
-                color: rgb(0.5, 0.5, 0.5)
-            });
-            
-            page.drawText('Signature: _____________________________', {
-                x: 300,
-                y: 100,
-                size: 10,
-                font: helveticaFont,
-                color: rgb(0.5, 0.5, 0.5)
-            });
-            
-            // Add document generated timestamp
-            page.drawText('Generated by Solar Permit Automation Tool v38', {
-                x: 50,
-                y: 50,
-                size: 8,
-                font: helveticaFont,
-                color: rgb(0.6, 0.6, 0.6)
-            });
-            
-            page.drawText(`${new Date().toLocaleString()}`, {
-                x: 50,
-                y: 35,
-                size: 8,
-                font: helveticaFont,
-                color: rgb(0.6, 0.6, 0.6)
-            });
-            
-            return await pdfDoc.save();
-        }
-        
-        // Coordinate Mapper Functions
-        async function openCoordinateMapper(cityId, pdfUrl) {
-            console.log('Opening coordinate mapper for city:', cityId);
-            console.log('PDF URL provided:', pdfUrl);
-            
-            currentCityId = cityId;
-            currentPdfUrl = pdfUrl || citiesData[cityId]?.pdfTemplateUrl;
-            
-            console.log('Using PDF URL:', currentPdfUrl);
-            console.log('City data:', citiesData[cityId]);
-            
-            if (!currentPdfUrl) {
-                alert('No PDF template found for this city. Please upload a PDF template first.');
+        function saveTemplate() {
+            if (droppedFields.length === 0) {
+                alert('Please add the Customer Name field to the template before saving');
                 return;
             }
             
-            // Show mapper overlay
-            document.getElementById('coordinateMapper').style.display = 'block';
-            
-            // Load existing mappings if any
-            const city = citiesData[cityId];
-            fieldMappings = city.fieldMappings ? [...city.fieldMappings] : [];
-            
-            console.log('Existing field mappings:', fieldMappings);
-            
-            // Populate dynamic fields list
-            populateDynamicFields(cityId);
-            
-            // Load and display PDF
-            await loadPdfForMapping();
-            
-            // Render existing mappings
-            renderExistingMappings();
-        }
-        
-        function populateDynamicFields(cityId) {
-            const cityData = citiesData[cityId];
-            const fieldsList = document.getElementById('dynamicFieldsList');
-            fieldsList.innerHTML = '';
-            
-            cityData.requiredFields.forEach(fieldId => {
-                const fieldConfig = masterFields[fieldId];
-                if (fieldConfig) {
-                    const fieldElement = document.createElement('div');
-                    fieldElement.className = 'draggable-field';
-                    fieldElement.draggable = true;
-                    fieldElement.dataset.fieldId = fieldId;
-                    fieldElement.dataset.fieldType = 'dynamic';
-                    fieldElement.textContent = fieldConfig.label;
-                    
-                    fieldElement.addEventListener('dragstart', handleDragStart);
-                    fieldElement.addEventListener('dragend', handleDragEnd);
-                    
-                    fieldsList.appendChild(fieldElement);
-                }
-            });
-        }
-        
-        async function loadPdfForMapping() {
-            try {
-                console.log('Loading PDF for mapping...', currentPdfUrl);
-                
-                if (!currentPdfUrl) {
-                    throw new Error('No PDF URL provided');
-                }
-                
-                console.log('Fetching PDF from:', currentPdfUrl);
-                
-                // Use a CORS proxy or Firebase Admin SDK approach
-                // For development, we'll try a different approach
-                const response = await fetch(currentPdfUrl, {
-                    mode: 'cors',
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                    }
-                }).catch(async (corsError) => {
-                    console.warn('CORS error, trying alternative approach:', corsError);
-                    
-                    // Alternative: Use Firebase Storage SDK directly
-                    try {
-                        const storageRef = window.ref(window.storage, currentPdfUrl);
-                        const downloadURL = await window.getDownloadURL(storageRef);
-                        console.log('Got download URL:', downloadURL);
-                        return fetch(downloadURL, { mode: 'no-cors' });
-                    } catch (sdkError) {
-                        console.error('Firebase SDK approach failed:', sdkError);
-                        throw new Error('Cannot access PDF due to CORS policy. Please deploy to a proper domain or configure CORS.');
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const arrayBuffer = await response.arrayBuffer();
-                console.log('PDF loaded, size:', arrayBuffer.byteLength, 'bytes');
-                
-                const { PDFDocument } = PDFLib;
-                pdfDoc = await PDFDocument.load(arrayBuffer);
-                const pages = pdfDoc.getPages();
-                pdfPage = pages[0];
-                
-                console.log('PDF document loaded successfully');
-                
-                // Render PDF to canvas
-                const canvas = document.getElementById('pdfCanvas');
-                const ctx = canvas.getContext('2d');
-                
-                const { width, height } = pdfPage.getSize();
-                canvas.width = width;
-                canvas.height = height;
-                
-                console.log('PDF dimensions:', width, 'x', height);
-                
-                // Draw white background (placeholder for actual PDF rendering)
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, width, height);
-                
-                // Draw border to show PDF bounds
-                ctx.strokeStyle = '#ddd';
-                ctx.strokeRect(0, 0, width, height);
-                
-                // Add PDF rendering here using pdf.js or similar library
-                // For now, just show dimensions and success message
-                ctx.fillStyle = '#999';
-                ctx.font = '14px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(`PDF Template Loaded Successfully`, width/2, height/2 - 20);
-                ctx.fillText(`${width} x ${height} pixels`, width/2, height/2 + 10);
-                ctx.fillText(`${pdfDoc.getPageCount()} page(s)`, width/2, height/2 + 40);
-                
-            } catch (error) {
-                console.error('Error loading PDF:', error);
-                
-                // For development, show a mock PDF interface
-                console.log('Showing mock PDF interface for development...');
-                const canvas = document.getElementById('pdfCanvas');
-                const ctx = canvas.getContext('2d');
-                
-                canvas.width = 612;
-                canvas.height = 792;
-                
-                // Draw mock PDF
-                ctx.fillStyle = 'white';
-                ctx.fillRect(0, 0, 612, 792);
-                ctx.strokeStyle = '#ddd';
-                ctx.strokeRect(0, 0, 612, 792);
-                
-                ctx.fillStyle = '#666';
-                ctx.font = '16px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('MOCK PDF TEMPLATE', 306, 100);
-                ctx.fillText('(CORS blocked - using placeholder)', 306, 130);
-                ctx.fillText('Drag fields here to map positions', 306, 400);
-                
-                // Draw some mock form fields for testing
-                ctx.strokeStyle = '#ccc';
-                ctx.strokeRect(50, 200, 200, 20);
-                ctx.strokeRect(50, 250, 200, 20);
-                ctx.strokeRect(50, 300, 200, 20);
-                
-                ctx.fillStyle = '#999';
-                ctx.font = '12px Arial';
-                ctx.textAlign = 'left';
-                ctx.fillText('Customer Name: _______________', 60, 215);
-                ctx.fillText('Address: ____________________', 60, 265);
-                ctx.fillText('System Size: ________________', 60, 315);
-                
-                alert('CORS Error: Cannot load PDF in development mode.\n\nUsing mock PDF interface for testing.\n\nTo fix: Deploy to a real domain or configure Firebase Storage CORS rules.');
-            }
-        }
-        
-        function handleDragStart(e) {
-            e.dataTransfer.effectAllowed = 'copy';
-            e.dataTransfer.setData('fieldId', e.target.dataset.fieldId);
-            e.dataTransfer.setData('fieldType', e.target.dataset.fieldType);
-            e.dataTransfer.setData('fieldLabel', e.target.textContent);
-            e.target.classList.add('dragging');
-        }
-        
-        function handleDragEnd(e) {
-            e.target.classList.remove('dragging');
-        }
-        
-        function setupDropZone() {
-            const pdfContainer = document.getElementById('pdfCanvasContainer');
-            if (pdfContainer) {
-                pdfContainer.addEventListener('dragover', handleDragOver);
-                pdfContainer.addEventListener('drop', handleDrop);
-            }
-        }
-        
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'copy';
-        }
-        
-        function handleDrop(e) {
-            e.preventDefault();
-            
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const fieldId = e.dataTransfer.getData('fieldId');
-            const fieldType = e.dataTransfer.getData('fieldType');
-            const fieldLabel = e.dataTransfer.getData('fieldLabel');
-            
-            if (fieldType === 'dynamic') {
-                addFieldToCanvas({
-                    id: `field_${Date.now()}`,
-                    fieldId: fieldId,
-                    type: 'dynamic',
-                    label: fieldLabel,
-                    x: x,
-                    y: y
-                });
-            }
-        }
-        
-        function addFieldToCanvas(fieldData) {
-            // Add to mappings array
-            fieldMappings.push(fieldData);
-            
-            // Create visual element
-            const fieldElement = document.createElement('div');
-            fieldElement.className = `dropped-field ${fieldData.type}`;
-            fieldElement.id = fieldData.id;
-            fieldElement.style.left = fieldData.x + 'px';
-            fieldElement.style.top = fieldData.y + 'px';
-            fieldElement.textContent = fieldData.label || fieldData.text || '☑';
-            
-            // Add delete button
-            const deleteBtn = document.createElement('div');
-            deleteBtn.className = 'field-actions';
-            deleteBtn.innerHTML = '<button onclick="deleteField(\'' + fieldData.id + '\')">Delete</button>';
-            fieldElement.appendChild(deleteBtn);
-            
-            // Make it draggable within canvas
-            fieldElement.addEventListener('mousedown', startDragging);
-            
-            document.getElementById('pdfCanvasContainer').appendChild(fieldElement);
-        }
-        
-        function startDragging(e) {
-            if (e.target.tagName === 'BUTTON') return;
-            
-            selectedField = e.currentTarget;
-            isDragging = true;
-            
-            const rect = selectedField.getBoundingClientRect();
-            
-            dragOffset.x = e.clientX - rect.left;
-            dragOffset.y = e.clientY - rect.top;
-            
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('mouseup', stopDragging);
-            
-            e.preventDefault();
-        }
-        
-        function drag(e) {
-            if (!isDragging || !selectedField) return;
-            
-            const containerRect = document.getElementById('pdfCanvasContainer').getBoundingClientRect();
-            let x = e.clientX - containerRect.left - dragOffset.x;
-            let y = e.clientY - containerRect.top - dragOffset.y;
-            
-            // Keep within bounds
-            x = Math.max(0, Math.min(x, containerRect.width - selectedField.offsetWidth));
-            y = Math.max(0, Math.min(y, containerRect.height - selectedField.offsetHeight));
-            
-            selectedField.style.left = x + 'px';
-            selectedField.style.top = y + 'px';
-            
-            // Update mapping data
-            const fieldId = selectedField.id;
-            const mapping = fieldMappings.find(f => f.id === fieldId);
-            if (mapping) {
-                mapping.x = x;
-                mapping.y = y;
-            }
-        }
-        
-        function stopDragging() {
-            isDragging = false;
-            selectedField = null;
-            document.removeEventListener('mousemove', drag);
-            document.removeEventListener('mouseup', stopDragging);
-        }
-        
-        function deleteField(fieldId) {
-            // Remove from mappings
-            fieldMappings = fieldMappings.filter(f => f.id !== fieldId);
-            
-            // Remove from DOM
-            const element = document.getElementById(fieldId);
-            if (element) element.remove();
-        }
-        
-        function addStaticText() {
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('staticTextModal').classList.add('active');
-            document.getElementById('staticTextInput').value = '';
-            document.getElementById('staticTextInput').focus();
-        }
-        
-        function confirmStaticText() {
-            const text = document.getElementById('staticTextInput').value.trim();
-            if (!text) {
-                alert('Please enter some text');
-                return;
-            }
-            
-            addFieldToCanvas({
-                id: `static_${Date.now()}`,
-                type: 'static',
-                text: text,
-                label: text,
-                x: 100,
-                y: 100
-            });
-            
-            closeModal();
-        }
-        
-        function addCheckbox() {
-            // Populate field options for dynamic checkboxes
-            const select = document.getElementById('checkboxFieldSelect');
-            select.innerHTML = '<option value="">Select a field...</option>';
-            
-            const cityData = citiesData[currentCityId];
-            cityData.requiredFields.forEach(fieldId => {
-                const fieldConfig = masterFields[fieldId];
-                if (fieldConfig) {
-                    const option = document.createElement('option');
-                    option.value = fieldId;
-                    option.textContent = fieldConfig.label;
-                    select.appendChild(option);
-                }
-            });
-            
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('checkboxModal').classList.add('active');
-        }
-        
-        function confirmCheckbox() {
-            const checkboxType = document.querySelector('input[name="checkboxType"]:checked').value;
-            let checkboxData = {
-                id: `checkbox_${Date.now()}`,
-                type: 'checkbox',
-                x: 100,
-                y: 100
+            // Create template configuration
+            const templateConfig = {
+                cityName: "Lee's Summit, MO",
+                fields: droppedFields.map(field => ({
+                    fieldType: field.fieldType,
+                    x: field.x,
+                    y: field.y,
+                    width: field.element.offsetWidth,
+                    height: field.element.offsetHeight
+                }))
             };
             
-            if (checkboxType === 'checked') {
-                checkboxData.checked = true;
-                checkboxData.label = '☑';
-            } else if (checkboxType === 'unchecked') {
-                checkboxData.checked = false;
-                checkboxData.label = '☐';
-            } else if (checkboxType === 'dynamic') {
-                const fieldId = document.getElementById('checkboxFieldSelect').value;
-                if (!fieldId) {
-                    alert('Please select a field');
-                    return;
-                }
-                checkboxData.fieldId = fieldId;
-                checkboxData.label = '☑';
+            // Update existing templates
+            existingTemplates['lees_summit'] = {
+                name: "Lee's Summit, MO",
+                hasTemplate: true,
+                fields: templateConfig.fields
+            };
+            
+            console.log('Template saved:', templateConfig);
+            
+            let message = '';
+            if (isEditingExisting) {
+                message = `Template updated successfully for Lee's Summit, MO!\n\nFields mapped: ${droppedFields.length}\n\n(Existing template was replaced)`;
+            } else {
+                message = `Template saved successfully for Lee's Summit, MO!\n\nFields mapped: ${droppedFields.length}\n\n(New template created)`;
             }
             
-            addFieldToCanvas(checkboxData);
-            closeModal();
-        }
-        
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-            document.getElementById('staticTextModal').classList.remove('active');
-            document.getElementById('checkboxModal').classList.remove('active');
-        }
-        
-        function renderExistingMappings() {
-            fieldMappings.forEach(mapping => {
-                addFieldToCanvas(mapping);
-            });
-        }
-        
-        async function saveFieldMapping() {
-            if (!currentCityId) return;
+            alert(message + '\n\n(This is a demo - template is not actually saved to database)');
             
-            try {
-                // Update city with field mappings
-                const cityRef = window.doc(window.db, 'cities', currentCityId);
-                await window.setDoc(cityRef, {
-                    fieldMappings: fieldMappings
-                }, { merge: true });
+            // Reset and go back to admin
+            resetBuilder();
+            showAdminPage();
+        }
+        
+        function replaceTemplate() {
+            if (confirm('Are you sure you want to replace the existing PDF template?\n\nThis will:\n- Remove the current template\n- Clear all field mappings\n- Allow you to upload a new PDF\n\nThis action cannot be undone.')) {
                 
-                // Update local data
-                if (citiesData[currentCityId]) {
-                    citiesData[currentCityId].fieldMappings = fieldMappings;
-                }
+                // Clear current template
+                clearCurrentTemplate();
                 
-                alert('Field mappings saved successfully!');
-                closeMapper();
+                // Go to upload page to select new template
+                document.getElementById('newCityName').value = "Lee's Summit, MO";
+                showUploadPage();
                 
-            } catch (error) {
-                console.error('Error saving mappings:', error);
-                alert('Failed to save mappings: ' + error.message);
+                alert('Template cleared! Please upload the new PDF template.');
             }
         }
         
-        function closeMapper() {
-            document.getElementById('coordinateMapper').style.display = 'none';
+        function clearCurrentTemplate() {
+            // Clear dropped fields from canvas
+            const canvas = document.querySelector('.pdf-canvas-container');
+            const droppedElements = canvas.querySelectorAll('.dropped-field');
+            droppedElements.forEach(element => element.remove());
             
-            // Clear dropped fields
-            document.querySelectorAll('.dropped-field').forEach(el => el.remove());
+            // Reset tracking arrays
+            droppedFields = [];
+            selectedField = null;
             
-            // Reset variables
-            currentPdfUrl = null;
-            currentCityId = null;
-            fieldMappings = [];
+            // Hide buttons
+            document.getElementById('deleteButton').style.display = 'none';
+            document.getElementById('replaceTemplateButton').style.display = 'none';
+            
+            // Clear canvas
+            const canvasElement = document.getElementById('pdfCanvas');
+            const ctx = canvasElement.getContext('2d');
+            ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            
+            console.log('Template cleared');
         }
         
-        function editCityMapping(cityId) {
-            const city = citiesData[cityId];
-            if (!city.pdfTemplateUrl) {
-                alert('Please upload a PDF template first');
-                return;
-            }
-            openCoordinateMapper(cityId);
-        }
-
-        // Initialize the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('DOM loaded, initializing app...');
-            
-            // Initialize admin panel field selector
-            initializeFieldSelector();
-            
-            // Load cities from Firebase
-            await loadCitiesFromFirebase();
-            
-            // Set up drop zone for coordinate mapper
-            setupDropZone();
-            
-            // Set up real-time listener for cities
-            if (window.db) {
-                const citiesRef = window.collection(window.db, 'cities');
-                window.onSnapshot(citiesRef, (snapshot) => {
-                    citiesData = {};
-                    snapshot.forEach((doc) => {
-                        citiesData[doc.id] = { id: doc.id, ...doc.data() };
-                    });
-                    updateCitySelection();
-                    updateAdminCityList();
+        function loadExistingFields(fields) {
+            // Load previously saved field positions
+            fields.forEach(fieldConfig => {
+                const droppedField = document.createElement('div');
+                droppedField.className = 'dropped-field';
+                droppedField.textContent = 'Customer Name'; // Clean text
+                droppedField.dataset.fieldType = fieldConfig.fieldType;
+                droppedField.style.left = fieldConfig.x + 'px';
+                droppedField.style.top = fieldConfig.y + 'px';
+                droppedField.style.width = fieldConfig.width + 'px';
+                droppedField.style.height = fieldConfig.height + 'px';
+                
+                // Make the field draggable
+                makeFieldDraggable(droppedField);
+                
+                // Add click event to select field
+                droppedField.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    selectDroppedField(this);
                 });
-            }
+                
+                // Add to canvas container
+                document.querySelector('.pdf-canvas-container').appendChild(droppedField);
+                
+                // Add to tracking array
+                droppedFields.push({
+                    element: droppedField,
+                    fieldType: fieldConfig.fieldType,
+                    x: fieldConfig.x,
+                    y: fieldConfig.y
+                });
+            });
             
-            console.log('App initialization complete');
-        });
+            console.log('Loaded existing fields:', fields.length);
+        }
+        
+        function resetBuilder() {
+            // Clear all states
+            droppedFields = [];
+            selectedField = null;
+            isEditingExisting = false;
+            currentPdfFile = null;
+            
+            // Hide buttons
+            document.getElementById('deleteButton').style.display = 'none';
+            document.getElementById('replaceTemplateButton').style.display = 'none';
+            
+            // Clear form inputs
+            document.getElementById('newCityName').value = '';
+        }
     </script>
-<!-- Override functions to correctly load PDF templates -->
-<script>
-  // Set currentPdfUrl and currentCityId when editing a city's mapping
-  window.editCityMapping = async function(cityId) {
-    try {
-      const doc = await window.getDoc(cityId);
-      window.currentCityId = cityId;
-      window.currentPdfUrl = doc.data().pdfTemplateUrl || null;
-      window.coordinateMapper(cityId);
-    } catch (error) {
-      console.error('Failed to load city data:', error);
-      alert('Could not load city data.');
-    }
-  };
-
-  // Load the PDF for mapping without CORS workarounds
-  window.loadPdfForMapping = async function() {
-    const container = document.getElementById('pdfContainer');
-    container.innerHTML = '';
-    if (!window.currentPdfUrl) {
-      container.innerText = 'No PDF template found for this city.';
-      return;
-    }
-    try {
-      const res = await fetch(window.currentPdfUrl);
-      const arrayBuffer = await res.arrayBuffer();
-      const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      PDFViewerApplication.open(url);
-    } catch (err) {
-      console.error('Error loading PDF:', err);
-      container.innerText = 'Failed to load PDF template.';
-    }
-  };
-</script>
 </body>
 </html>
-
-
